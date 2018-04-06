@@ -1,0 +1,56 @@
+ARCHITEKTURA:
+Serwer w C# (ASP.NET MVC Core 2.0)
+Klient w HTML5 CSS3 JS
+Technologia Websockets do aktualizacji stanu rozmów
+
+FUNKCJONALNOŚCI:
+Logowanie
+Lista użytkowników
+Lista znajomych
+Rozmowa
+Konferencja
+Whiteboard
+Profilowe
+Emotikony
+Zdjęcia miniatury
+Przesył plików
+Archiwum rozmów
+Dodawanie znajomych
+Blokowanie
+
+PRIORYTETY BIZNESOWE:
+Logowanie 8
+Rozmowa 8
+
+Lista użytkowników 5
+Lista znajomych 5
+Konferencja 5
+Archiwum rozmów 5
+Dodawanie znajomych 5
+Blokowanie 5
+
+Whiteboard 2
+Profilowe 2
+Emotikony 2
+Przesył plików 2
+
+Zdjęcia miniatury 1
+
+TRUDNOŚĆ PROGRAMOWANIA:
+Konferencja 8
+Przesył plików 8
+
+Logowanie 5
+Rozmowa 5
+
+Zdjęcia miniatury 3
+Whiteboard 3
+
+Lista użytkowników 2
+Profilowe 2
+Emotikony 2
+Archiwum rozmów 2
+Dodawanie znajomych 2
+
+Blokowanie 1
+Lista znajomych 1
