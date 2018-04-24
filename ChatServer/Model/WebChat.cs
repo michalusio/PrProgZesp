@@ -17,7 +17,7 @@ namespace ChatServer.Model
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(@"Data Source=tcp:127.0.0.1,63588;Database=WebChat;User Id=sa; Password=lolkraker123;MultipleActiveResultSets=true");
+                optionsBuilder.UseSqlServer(@"Data Source=tcp:127.0.0.1,63588;Database=WebChat;User Id=sa; Password=sa123;MultipleActiveResultSets=true");
             }
         }
 

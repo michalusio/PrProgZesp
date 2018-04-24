@@ -47,6 +47,43 @@ namespace ChatServer
             app.UseStaticFiles();
             app.UseLoginMiddleware();
 
+            var webSocketOptions = new WebSocketOptions
+            {
+                KeepAliveInterval = TimeSpan.FromSeconds(5),
+                ReceiveBufferSize = Program.WEBSOCKET_BUFFER_LENGTH
+            };
+            app.UseWebSockets(webSocketOptions);
+
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Path == "/ws" && context.LoginId()>0)
+                {
+                    if (context.WebSockets.IsWebSocketRequest)
+                    {
+                        WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                        var id = context.LoginId();
+                        
+                        if (!LoginMiddleware.WebSockets.ContainsKey(id))
+                        {
+                            Console.WriteLine($"User {id} logged in.");
+                            await WebSocketManager.BroadcastLogIn(id);
+                        }
+
+                        LoginMiddleware.WebSockets[context.LoginId()] = webSocket;
+                        await WebSocketManager.Process(context, webSocket);
+                    }
+                    else
+                    {
+                        context.Response.StatusCode = 400;
+                    }
+                }
+                else
+                {
+                    await next();
+                }
+
+            });
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
