@@ -1,0 +1,80 @@
+﻿@using ChatServer.Model
+@{
+    var user = Context.Items["User"] as Users;
+    var status = (int)LoginMiddleware.Statuses[Context.LoginId()];
+    <div id="Settings" class="col-md-10 tab-pane fade">
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>USTAWIENIA</th>
+                </tr>
+            </thead>
+            <tr>
+                <th class="col-md-4">Status:</th>
+                <td id="statusLabel" class="col-md-4">-</td>
+                <td class="col-md-4">
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Zmień&nbsp;<span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a onclick="changeStatus(this, 1)" id="aStatus1"><img src="images/status1.png" class="statusImage" />&nbsp;Dostępny</a></li>
+                            <li><a onclick="changeStatus(this, 2)" id="aStatus2"><img src="images/status2.png" class="statusImage" />&nbsp;Zaraz Wracam</a></li>
+                            <li><a onclick="changeStatus(this, 3)" id="aStatus3"><img src="images/status3.png" class="statusImage" />&nbsp;Niewidoczny</a></li>
+                            <li><a onclick="changeStatus(this, 4)" id="aStatus4"><img src="images/status4.png" class="statusImage" />&nbsp;Nie Przeszkadzać</a></li>
+                            <li><a onclick="changeStatus(this, 5)" id="aStatus5"><img src="images/status5.png" class="statusImage" />&nbsp;Niedostępny</a></li>
+                        </ul>
+                    </div>
+                    <script>
+                        $(document).ready(function() {
+                            $("#statusLabel").html($("#aStatus@(status)").html());
+                        });
+                        function changeStatus(link, status) {
+                            $.post(
+                                "@Url.Action("SetStatus","Home")",
+                                {
+                                    status: status
+                                },
+                                function(data) {
+                                    if (data.newStatus > 0) {
+                                        $("#statusLabel").html(link.innerHTML);
+                                    }
+                                }
+                            );
+                        }
+                    </script>
+                </td>
+            </tr>
+            <tr>
+                <th class="col-md-4">Nazwa Użytkownika:</th>
+                <td class="col-md-4" id="nickname">@user.Nickname</td>
+                <td class="col-md-4"><button class="btn btn-default">Zmień</button></td>
+            </tr>
+            <tr>
+                <th class="col-md-4">Login:</th>
+                <td class="col-md-4">@user.Login</td>
+                <td class="col-md-4"><button class="btn btn-default">Zmień</button></td>
+            </tr>
+            <tr>
+                <th class="col-md-4">Hasło:</th>
+                <td class="col-md-4">*****</td>
+                <td class="col-md-4"><button class="btn btn-default">Zmień</button></td>
+            </tr>
+            <tr>
+                <th class="col-md-4">Avatar:</th>
+                <td class="col-md-4"><img src="data:image/png;base64,@Convert.ToBase64String(user.Avatar??Startup.DefaultAvatar)" style="border-radius:50%" /></td>
+                <td class="col-md-4"><button class="btn btn-default">Zmień</button></td>
+            </tr>
+            <tr>
+                <th class="col-md-4">E-mail:</th>
+                <td class="col-md-4">@(user.Email??"-")</td>
+                <td class="col-md-4"><button class="btn btn-default">Zmień</button></td>
+            </tr>
+            <tr>
+                <th class="col-md-4">Telefon:</th>
+                <td class="col-md-4">@(user.Phone??"-")</td>
+                <td class="col-md-4"><button class="btn btn-default">Zmień</button></td>
+            </tr>
+        </table>
+
+    </div>
+}

@@ -1,0 +1,118 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+.body-content {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+div.loginTitle{
+    font-size: 24px;
+    text-align: center;
+}
+
+div.menuBar{
+    text-align:left;
+}
+
+img.statusImage {
+    vertical-align: middle;
+}
+
+img.avatar {
+    border-color: gold;
+    border-width: 4px;
+    border-radius: 50%
+}
+
+.userTable > tbody > tr > td > img {
+    width: 64px;
+    height: auto;
+    border-color: gold;
+    border-width: 4px;
+    border-radius: 50%
+}
+
+.userTable > tbody > tr > td {
+    cursor: pointer;
+    font-size: 150%;
+    vertical-align: middle;
+    align-content: center;
+    table-layout: fixed;
+    width: 32px;
+    overflow: hidden;
+    word-wrap: break-word;
+}
+
+.userTable > tbody > tr > td > .glyphicon-ban-circle {
+    font-size: 167%;
+}
+
+.userTable > tbody > tr > td > .glyphicon-plus {
+    font-size: 167%;
+}
+
+.userTable > tbody > tr > td:nth-child(1n+1) {
+    width: 32px;
+}
+
+.userTable > tbody > tr > td:hover {
+    background-color: #ababab;
+}
+
+#chatBoxCss {
+    border: 1px solid #ababab;
+    background-color: #eeeefa;
+    border-top-right-radius: 16px;
+    border-top-left-radius: 16px;
+    width: 80vw;
+    overflow: hidden;
+}
+
+#chatBox {
+    min-height: 400px;
+    overflow-y: scroll;
+    padding: 10px;
+}
+
+#chatBox > hr {
+    border: 1px solid #dddddd;
+    margin-top: 8px;
+    margin-bottom: 0;
+}
+
+#chatInput {
+    width: 80vw;
+    border-bottom-right-radius: 16px;
+    border-bottom-left-radius: 16px;
+    border: 1px solid #ababab;
+    padding-left: 10px;
+    padding-right: 10px;
+    outline: none;
+    resize: vertical;
+    min-height: 32px;
+    height: 32px;
+}
+
+msg-head {
+    display: block;
+    font-size: smaller;
+    font-style: italic;
+    color: #ababab;
+}
+msg {
+    display: inline-block;
+    border-radius: 16px;
+    min-height: 24px;
+    background-color: #aaaaea;
+    padding-left: 10px;
+    padding-right: 10px;
+    align-content: center;
+    vertical-align: central;
+}
+
+.bolder {
+    font-size: large;
+}

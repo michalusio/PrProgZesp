@@ -1,0 +1,58 @@
+﻿@using ChatServer.Model
+@using Microsoft.EntityFrameworkCore
+@{
+    using (var c = new WebChat())
+    {
+        var user = c.Users
+            .Include(u=>u.ConversationParticipants)
+            .Single(u => u.Id == Context.LoginId());
+        ViewData["Title"] = user.Login;
+        Context.Items["DB"] = c;
+        Context.Items["User"] = user;
+
+        <div class="col-md-2">
+            <ul class="nav nav-pills nav-stacked menuBar">
+                <li>
+                    <a href="#">Menu</a>
+                </li>
+                <li class="active">
+                    <a href="#Conversations" data-toggle="tab">Rozmowy</a>
+                </li>
+                <li>
+                    <a href="#Friends" data-toggle="tab">Kontakty</a>
+                </li>
+                <li>
+                    <a href="#Users" data-toggle="tab">Lista Użytkowników</a>
+                </li>
+                <li>
+                    <a href="#Settings" data-toggle="tab">Ustawienia</a>
+                </li>
+                <li>
+                    <a onclick="logOut()">Wyloguj</a>
+                </li>
+
+            </ul>
+        </div>
+        <div class="tab-content">
+            @{
+                Html.RenderPartial("Friends");
+                Html.RenderPartial("Users");
+                Html.RenderPartial("Settings");
+            }
+        </div>
+    }
+}
+
+<script>
+    function logOut() {
+
+        $.post(
+            "@Url.Action("TryLogOut", "Home")",
+            function(data) {
+                if (data.isLoggedOut) {
+                    window.location.href = "@Url.Action("Index", "Home")";
+                }
+            }
+        );
+    }
+</script>
