@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Net.WebSockets;
 using ChatServer.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -44,7 +46,6 @@ namespace ChatServer
 
             app.UseStaticFiles();
             app.UseLoginMiddleware();
-            
 
             app.UseMvc(routes =>
             {

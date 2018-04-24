@@ -61,6 +61,107 @@ namespace ChatServer.Controllers
             return js;
         }
 
+        [HttpPost]
+        public JsonResult GetUserConversation(int id)
+        {
+            if (HttpContext.LoginId() > 0)
+            {
+                using (var c = new WebChat())
+                {
+                    var conv = c.GetConversationBetween(
+                        c.Users
+                            .Where(u =>
+                                u.Id == id ||
+                                u.Id == HttpContext.LoginId()
+                            )
+                    );
+                    if (conv == null)
+                    {
+                        conv = new Conversations();
+
+                        var p1 = new ConversationParticipants
+                        {
+                            UserId = HttpContext.LoginId()
+                        };
+                        conv.ConversationParticipants.Add(p1);
+
+                        var p2 = new ConversationParticipants
+                        {
+                            UserId = id
+                        };
+                        conv.ConversationParticipants.Add(p2);
+
+                        c.Add(conv);
+                        c.SaveChanges();
+
+                        conv = c.GetConversationBetween(
+                            c.Users
+                                .Where(u =>
+                                    u.Id == id ||
+                                    u.Id == HttpContext.LoginId()
+                                )
+                        );
+                    }
+
+                    return new JsonResult(new {id = conv.Id});
+                }
+            }
+            return new JsonResult("");
+        }
+
+        [HttpPost]
+        public JsonResult GetConversationUsers(int id)
+        {
+            if (HttpContext.LoginId() > 0)
+            {
+                using (var c = new WebChat())
+                {
+                    var conv = c.ConversationParticipants.Where(cp => cp.ConversationId == id);
+                    var nicknames = conv.Select(cp => cp.User.Nickname);
+                    return new JsonResult(new
+                    {
+                        nicknames = nicknames.ToArray(),
+                        seen = conv.First(cp => cp.UserId == HttpContext.LoginId()).SeenMessage
+                    });
+                }
+            }
+            return new JsonResult("");
+        }
+        
+        [HttpPost]
+        public JsonResult GetConversationMessages(int id)
+        {
+            if (HttpContext.LoginId() > 0)
+            {
+                using (var c = new WebChat())
+                {
+                    var messages = c.Messages
+                        .Where(m => m.ConversationId == id)
+                        .OrderBy(m => m.Timestamp);
+                    var js = new JsonResult(new
+                    {
+                        messages = messages.Select(m =>
+                            new
+                            {
+                                id = m.Id,
+                                from = m.User.Nickname,
+                                text = m.Text
+                            }).ToArray()
+                    });
+                    var conv = c.ConversationParticipants.SingleOrDefault(cp =>
+                        cp.ConversationId == id &&
+                        cp.UserId == HttpContext.LoginId());
+                    if (conv != null)
+                    {
+                        conv.SeenMessage = messages.LastOrDefault()?.Id ?? 0;
+                        c.SaveChanges();
+                    }
+                    return js;
+                }
+            }
+            return new JsonResult("");
+        }
+
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
