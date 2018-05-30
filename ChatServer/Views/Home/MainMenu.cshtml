@@ -38,6 +38,8 @@
                 Html.RenderPartial("Friends");
                 Html.RenderPartial("Users");
                 Html.RenderPartial("Settings");
+                Html.RenderPartial("Conversation");
+                Html.RenderPartial("ConversationsList");
             }
         </div>
     }
@@ -55,4 +57,87 @@
             }
         );
     }
+
+    function switchConversation(id) {
+        $(".in").removeClass("in");
+        $(".active").removeClass("active");
+        $(`#conv${id}`).removeClass("bolder");
+        var conv = $("#Conversation");
+        conv.addClass("in active");
+        conv.data("id", id);
+        writeConversationUsers(id);
+        writeConversationMessages(id);
+    }
+
+    function talkUser(id) {
+        $.post(
+            "@Url.Action("GetUserConversation","Home")",
+            { id: id },
+            function(data) {
+                switchConversation(data.id);
+            }
+        );
+    }
+
+    function setNicknames(data) {
+        $("#Conversation").data("newest", data.seen);
+        $("#ConversationUsers").html(data.nicknames.join());
+    }
+
+    function setMessages(data) {
+        data.messages.forEach(
+            function(msg) {
+                addMessage(msg);
+            }
+        );
+    }
+
+    function addMessage(msg) {
+        var cb = $("#chatBox");
+        if (cb.children("msg-head").last().html() !== msg.from) {
+            cb.append(`<hr><msg-head>${msg.from}</msg-head>`);
+        } else cb.append(`<br>`);
+        cb.append(`<msg>${msg.text}</msg>`);
+    }
+
+    function onTextInput() {
+        var key = window.event.keyCode;
+        if (key === 13 && !window.event.shiftKey) {
+            window.event.preventDefault();
+            webSocket.send(JSON.stringify({
+                type:"message",
+                id:$("#Conversation").data("id"),
+                message:$("#chatInput").val()
+            }));
+            $("#chatInput").val("");
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    function postGetUsers(id,x) {
+        $.post(
+            "@Url.Action("GetConversationUsers","Home")", { id: id }, x
+        );
+    }
+
+    function postGetUsers2(id,a,x) {
+        $.post(
+            "@Url.Action("GetConversationUsers","Home")", { id: id }, function (v) { x(v, a); }
+        );
+    }
+
+    function writeConversationUsers(id) {
+        postGetUsers(id,setNicknames);
+    }
+
+    function writeConversationMessages(id) {
+        $.post(
+            "@Url.Action("GetConversationMessages","Home")", { id: id }, setMessages
+        );
+    }
 </script>
+<script src="~/js/WebSocket.js"></script>

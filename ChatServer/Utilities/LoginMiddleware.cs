@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.WebSockets;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -10,6 +11,7 @@ namespace ChatServer.Utilities
     {
         public static readonly Map<string, int> LoggedUsers = new Map<string, int>();
         public static readonly Dictionary<int, Status> Statuses = new Dictionary<int, Status>();
+        public static readonly Dictionary<int, WebSocket> WebSockets = new Dictionary<int, WebSocket>();
 
         private readonly RequestDelegate next;
 
@@ -37,12 +39,12 @@ namespace ChatServer.Utilities
 
         public static bool LogOutUser(string userKey)
         {
-            return LoggedUsers.ContainsKey(userKey) && Statuses.Remove(LoggedUsers.Forward[userKey]) && LoggedUsers.Remove(userKey);
+            return LoggedUsers.ContainsKey(userKey) && Statuses.Remove(LoggedUsers.Forward[userKey]) && WebSockets.Remove(LoggedUsers.Forward[userKey]) && LoggedUsers.Remove(userKey);
         }
 
         public static bool LogOutUser(int userId)
         {
-            return LoggedUsers.ContainsValue(userId) && LoggedUsers.Remove(userId) && Statuses.Remove(userId);
+            return LoggedUsers.ContainsValue(userId) && LoggedUsers.Remove(userId) && Statuses.Remove(userId) && WebSockets.Remove(userId);
         }
 
         public Task InvokeAsync(HttpContext context)

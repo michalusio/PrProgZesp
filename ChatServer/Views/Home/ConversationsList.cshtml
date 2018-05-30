@@ -1,0 +1,36 @@
+﻿@using ChatServer.Model
+@{
+    var user = Context.Items["User"] as Users;
+    <div id="Conversations" class="col-md-10 tab-pane fade in active">
+        <table class="table table-striped userTable">
+            <tbody>
+                @{
+                    var db = Context.Items["DB"] as WebChat;
+                    var conversations = db.GetConversationsInOrder(user);
+                    Console.WriteLine(conversations.Count());
+                    foreach (var item in conversations)
+                    {
+                        var msg = item.Messages.OrderByDescending(m => m.Timestamp).FirstOrDefault();
+                        <tr id="conv@(item.Id)" @{
+                            if (item.ConversationParticipants.First(c=>c.UserId==user.Id).SeenMessage<msg.Id)
+                            {
+                                @:class="bolder"
+                            }
+                        }>
+                            <td onclick="switchConversation(@item.Id)">
+                                <div>
+                                    @item.ConversationParticipants.Select(c => c.User.Nickname).Aggregate((c, n) => c + ", " + n)
+                                </div>
+                                <div>
+                                    @Html.Raw(msg.Text)
+                                </div>
+                                <span class="badge">@(item.Messages.Count)</span>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+    </div>
+}

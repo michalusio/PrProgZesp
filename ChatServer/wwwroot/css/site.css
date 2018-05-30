@@ -13,6 +13,11 @@ div.loginTitle{
     text-align: center;
 }
 
+div.registerTitle {
+    font-size: 24px;
+    text-align: center;
+}
+
 div.menuBar{
     text-align:left;
 }
