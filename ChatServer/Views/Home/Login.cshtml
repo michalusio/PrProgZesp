@@ -32,36 +32,36 @@
             <div id="formError"></div>
         </form>
         <script>
-        $(document).ready(function() {
-            $("#loginForm").submit(onLogin);
-        });
-
-        function onLogin(event) {
-            event.preventDefault();
-            var $form = $(this);
-            $.post(
-                "@Url.Action("TryLogin", "Home")",
-                {
-                    name: $form.find("input[name='login']").val(),
-                    password: $form.find("input[name='password']").val()
-                },
-                function(data) {
-                    if (data.isLogged) {
-                        window.location.href = "@Url.Action("Index", "Home")";
-                    } else {
-                        $("#formError").innerHTML = "Logowanie nieudane!";
-                    }
-                }
-            ).fail(function() {
-                $("#formError").innerHTML = "Logowanie nieudane!";
+            $(document).ready(function() {
+                $("#loginForm").submit(onLogin);
             });
-        }
 
-        function onJoin() {
-            $(".loginTitle").slideUp("fast");
-            $(".registerTitle").slideDown("fast");
+            function onLogin(event) {
+                event.preventDefault();
+                var $form = $(this);
+                $.post(
+                    "@Url.Action("TryLogin", "Home")",
+                    {
+                        name: $form.find("input[name='login']").val(),
+                        password: $form.find("input[name='password']").val()
+                    },
+                    function(data) {
+                        if (data.isLogged) {
+                            window.location.href = "@Url.Action("Index", "Home")";
+                        } else {
+                            $("#formError").innerHTML = "Logowanie nieudane!";
+                        }
+                    }
+                ).fail(function() {
+                    $("#formError").innerHTML = "Logowanie nieudane!";
+                });
+            }
 
-        }
+            function onJoin() {
+                $(".loginTitle").slideUp("fast");
+                $(".registerTitle").slideDown("fast");
+
+            }
 
         </script>
     </div>

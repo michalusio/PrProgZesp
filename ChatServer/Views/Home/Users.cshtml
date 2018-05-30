@@ -4,7 +4,6 @@
     var db = Context.Items["DB"] as WebChat;
     <div id="Users" class="col-md-10 tab-pane fade">
         <table class="table table-striped userTable">
-            
             <tbody>
                 @foreach (var item in db
                             .Users
@@ -14,19 +13,19 @@
                             u.Id != user.Id)
                             )
                 {
-            <tr class="user@(item.Id)">
-                <td onclick="talkUser(@(item.Id))">
-                    <image src="data:image/png;base64,@Convert.ToBase64String(item.Avatar ?? Startup.DefaultAvatar)" />
-                    @item.Nickname
-                </td>
-                <td onclick="friendUser(@(item.Id))">
-                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                </td>
-                <td onclick="blockUser(@(item.Id))">
-                    <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
-                </td>
+                <tr class="user@(item.Id)">
+                    <td onclick="talkUser(@(item.Id))">
+                        <image src="data:image/png;base64,@Convert.ToBase64String(item.Avatar ?? Startup.DefaultAvatar)" />
+                        @item.Nickname
+                    </td>
+                    <td onclick="friendUser(@(item.Id))">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                    </td>
+                    <td onclick="blockUser(@(item.Id))">
+                        <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
+                    </td>
 
-            </tr>
+                </tr>
                 }
             </tbody>
         </table>

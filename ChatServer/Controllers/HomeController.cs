@@ -15,7 +15,7 @@ namespace ChatServer.Controllers
             return View();
         }
 
-        //Metoda logowania. Przyjmuje login i hasło, zwraca wartość isLogged określającą, czy udało się zalogować
+        //Metoda rejestracji. Przyjmuje potrzebne dane, zwraca wartość isLogged określającą, czy udało się zarejestrować i zalogować
         [HttpPost]
         public JsonResult TryRegister(string login, string password, string name, string email, string phone)
         {
@@ -53,6 +53,7 @@ namespace ChatServer.Controllers
             return new JsonResult(new {isLogged = false});
         }
 
+        //Metoda logowania. Przyjmuje login i hasło, zwraca wartość isLogged określającą, czy udało się zalogować
         [HttpPost]
         public JsonResult TryLogin(string name, string password)
         {
@@ -102,6 +103,7 @@ namespace ChatServer.Controllers
             return js;
         }
 
+        //Metoda wysyłająca użytkownikowi ID konwersacji z drugą osobą. Konwersacja zostanie utworzona w przypadku jej braku. Wymaga zalogowania
         [HttpPost]
         public JsonResult GetUserConversation(int id)
         {
@@ -150,6 +152,7 @@ namespace ChatServer.Controllers
             return new JsonResult("");
         }
 
+        //Metoda pobierająca nicki użytkowników konwersacji. Wymaga zalogowania
         [HttpPost]
         public JsonResult GetConversationUsers(int id)
         {
@@ -169,6 +172,7 @@ namespace ChatServer.Controllers
             return new JsonResult("");
         }
         
+        //Metoda pobierająca wiadomości konwersacji. Wymaga zalogowania
         [HttpPost]
         public JsonResult GetConversationMessages(int id)
         {
