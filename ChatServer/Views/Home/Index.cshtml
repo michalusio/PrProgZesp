@@ -3,69 +3,8 @@
 }
 
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12 loginTitle">
-            Panel Logowania
-            <br />
-            <form method="post" id="loginForm">
-                <div class="col-md-4 col-md-offset-4 form-group">
-                    <input type="text"
-                           class="form-control"
-                           name="login"
-                           placeholder="Login"
-                           pattern="\S{4,}"
-                           required
-                           title="Login musi mieć co najmniej 4 znaki"
-                           oninvalid="this.setCustomValidity('Login musi mieć co najmniej 4 znaki')"
-                           oninput="setCustomValidity('')" />
-                </div>
-                <div class="col-md-4 col-md-offset-4 form-group">
-                    <input type="password"
-                           class="form-control"
-                           name="password"
-                           placeholder="Hasło"
-                           pattern="\S{8,}"
-                           required
-                           title="Hasło musi mieć co najmniej 8 znaków"
-                           oninvalid="this.setCustomValidity('Hasło musi mieć co najmniej 8 znaków')"
-                           oninput="setCustomValidity('')" />
-                </div>
-                <div class="col-md-4 col-md-offset-4 form-group" id="formButtons">
-                    <button id="logIn" type="submit" class="btn btn-primary">Zaloguj!</button>
-                    <button id="regIn" onclick="onRegister()" type="button" class="btn btn-default">Dołącz!</button>
-                </div>
-                <div id="formError"></div>
-            </form>
-            <script>
-                $(document).ready(function() {
-                    $("#loginForm").submit(onLogin);
-                });
-
-                function onLogin(event) {
-                    event.preventDefault();
-                    var $form = $(this);
-                    $.post(
-                        "@Url.Action("TryLogin", "Home")",
-                        {
-                            name: $form.find("input[name='login']").val(),
-                            password: $form.find("input[name='password']").val()
-                        },
-                        function(data) {
-                            if (data.isLogged) {
-                                window.location.href = "@Url.Action("Index", "Home")";
-                            } else {
-                                $("#formError").innerHTML = "Logowanie nieudane!";
-                            }
-                        }
-                    ).fail(function() {
-                        $("#formError").innerHTML = "Logowanie nieudane!";
-                    });
-                }
-
-                function onRegister() {
-
-                }
-            </script>
-        </div>
-    </div>
+    @{
+        Html.RenderPartial("Register");
+        Html.RenderPartial("Login");
+    }
 </div>

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using ChatServer.Model;
 using ChatServer.Models;
@@ -12,6 +13,43 @@ namespace ChatServer.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+
+        [HttpPost]
+        public JsonResult TryRegister(string login, string password, string name, string email, string phone)
+        {
+            if (HttpContext.LoginId() == 0)
+            {
+                using (var c = new WebChat())
+                {
+                    var toLogin = c
+                        .Users
+                        .Where(u => u.Login.Equals(login));
+                    if (toLogin.Count() != 0)
+                        return new JsonResult(new {isLogged = false});
+                    var user = new Users
+                    {
+                        CreationDate = DateTime.Now,
+                        Login = login,
+                        Password = BCrypt.Net.BCrypt.HashPassword(password),
+                        Nickname = name,
+                        Email = email,
+                        Phone = phone
+                    };
+                    c.Users.Add(user);
+                    c.SaveChanges();
+                }
+
+                using (var c = new WebChat())
+                {
+                    var user = c.Users.First(u => u.Login.Equals(login));
+                    return new JsonResult(new
+                    {
+                        isLogged = LoginMiddleware.LogUser(HttpContext, user.Id)
+                    });
+                }
+            }
+            return new JsonResult(new {isLogged = false});
         }
 
         [HttpPost]
