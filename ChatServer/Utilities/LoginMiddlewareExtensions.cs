@@ -10,6 +10,9 @@ namespace ChatServer.Utilities
             return builder.UseMiddleware<LoginMiddleware>();
         }
 
+        /// <summary>
+        /// Pobiera ID zalogowanego użytkownika. 0, jeśli nie zalogowany
+        /// </summary>
         public static int LoginId(this HttpContext ht)
         {
             return (ht.Items["loginId"] as int?).GetValueOrDefault();

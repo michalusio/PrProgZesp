@@ -14,6 +14,7 @@ namespace ChatServer.Controllers
             return View();
         }
 
+        //Metoda logowania. Przyjmuje login i hasło, zwraca wartość isLogged określającą, czy udało się zalogować
         [HttpPost]
         public JsonResult TryLogin(string name, string password)
         {
@@ -34,6 +35,7 @@ namespace ChatServer.Controllers
             }
         }
 
+        //Metoda zmiany statusu. Wymaga bycia zalogowanym
         [HttpPost]
         public JsonResult SetStatus(Status status)
         {
@@ -47,6 +49,7 @@ namespace ChatServer.Controllers
             return new JsonResult(new { newStatus = -1 });
         }
 
+        //Metoda wylogowująca użytkownika. Zwraca wartość isLoggedOut określającą, czy udało się wylogować
         [HttpPost]
         public JsonResult TryLogOut()
         {

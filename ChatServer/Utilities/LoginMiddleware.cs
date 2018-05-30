@@ -18,6 +18,9 @@ namespace ChatServer.Utilities
             this.next = next;
         }
 
+        /// <summary>
+        /// Procedura logująca użytkownika. Tworzy identyfikator sesji i go zapisuje
+        /// </summary>
         public static bool LogUser(HttpContext context, int userId)
         {
             if (LoggedUsers.ContainsValue(userId))
@@ -50,6 +53,9 @@ namespace ChatServer.Utilities
             return next(context);
         }
 
+        /// <summary>
+        /// Tworzy bezpieczny kryptograficznie GUID
+        /// </summary>
         public static Guid CreateCryptographicallySecureGuid()
         {
             using (var provider = new RNGCryptoServiceProvider()) 
