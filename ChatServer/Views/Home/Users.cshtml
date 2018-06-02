@@ -1,4 +1,5 @@
 ﻿@using ChatServer.Model
+@using Microsoft.EntityFrameworkCore
 @{
     var user = Context.Items["User"] as Users;
     var db = Context.Items["DB"] as WebChat;
@@ -7,9 +8,11 @@
             <tbody>
                 @foreach (var item in db
                             .Users
+                            .Include(u=>u.FriendsFriend1Navigation)
+                            .Include(u=>u.FriendsFriend2Navigation)
                             .Where(u =>
                             LoginMiddleware.LoggedUsers.ContainsValue(u.Id) &&
-                            (int)LoginMiddleware.Statuses[u.Id] < 3 &&
+                            (int)LoginMiddleware.Statuses.GetValueOrDefault(u.Id, Status.Unavailable) < 3 &&
                             u.Id != user.Id)
                             )
                 {
@@ -18,9 +21,19 @@
                         <image src="data:image/png;base64,@Convert.ToBase64String(item.Avatar ?? Startup.DefaultAvatar)" />
                         @item.Nickname
                     </td>
-                    <td onclick="friendUser(@(item.Id))">
-                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                    </td>
+                    @{
+                        if (item.IsFriendWith(user))
+                        {
+                            <td>
+                            </td>
+                        }
+                        else
+                        {
+                            <td onclick="friendUser(@(item.Id))">
+                                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                            </td>
+                        }
+                    }
                     <td onclick="blockUser(@(item.Id))">
                         <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
                     </td>

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
 namespace ChatServer.Model
@@ -30,10 +29,10 @@ namespace ChatServer.Model
         public ICollection<Friends> FriendsFriend2Navigation { get; set; }
         public ICollection<Messages> Messages { get; set; }
 
-        [NotMapped]
-        public IEnumerable<Friends> FriendLinks => FriendsFriend1Navigation.Concat(FriendsFriend2Navigation);
-
-        [NotMapped]
-        public IEnumerable<Users> Friends => FriendLinks.Select(f => f.Friend1 == Id ? f.Friend2Navigation : f.Friend1Navigation);
+        public bool IsFriendWith(Users u)
+        {
+            return FriendsFriend1Navigation.Any(f => f.Friend1 == u.Id || f.Friend2 == u.Id) ||
+                   FriendsFriend2Navigation.Any(f => f.Friend1 == u.Id || f.Friend2 == u.Id);
+        }
     }
 }

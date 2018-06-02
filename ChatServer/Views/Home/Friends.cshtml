@@ -1,18 +1,28 @@
 ﻿@using ChatServer.Model
 @{
     var user = Context.Items["User"] as Users;
+    var c = Context.Items["DB"] as WebChat;
     <div id="Friends" class="col-md-10 tab-pane fade">
         <table class="table table-striped userTable">
             <tbody>
-            @foreach (var item in user.Friends)
-            {
-                <tr>
-                    <td onclick="talkUser(@(item.Id))">
-                        <image src="data:image/png;base64,@Convert.ToBase64String(item.Avatar ?? Startup.DefaultAvatar)"/>
-                        @item.Nickname
-                    </td>
-                </tr>
-            }
+                @foreach (var item in c.Friends.Where(f=>f.Friend1==user.Id).Select(f=>f.Friend2Navigation))
+                {
+                    <tr>
+                        <td onclick="talkUser(@(item.Id))">
+                            <image src="data:image/png;base64,@Convert.ToBase64String(item.Avatar ?? Startup.DefaultAvatar)" />
+                            @item.Nickname
+                        </td>
+                    </tr>
+                }
+                @foreach (var item in c.Friends.Where(f => f.Friend2 == user.Id).Select(f => f.Friend1Navigation))
+                {
+                    <tr>
+                        <td onclick="talkUser(@(item.Id))">
+                            <image src="data:image/png;base64,@Convert.ToBase64String(item.Avatar ?? Startup.DefaultAvatar)" />
+                            @item.Nickname
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
 

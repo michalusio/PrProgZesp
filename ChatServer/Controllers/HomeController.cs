@@ -93,14 +93,9 @@ namespace ChatServer.Controllers
         public JsonResult TryLogOut()
         {
             var id = HttpContext.LoginId();
-            var js = new JsonResult(
-                new
-                {
-                    isLoggedOut = id > 0 && LoginMiddleware.LogOutUser(id)
-                }
-            );
+            if (id > 0) LoginMiddleware.LogOutUser(id);
             CookieUtils.Set(HttpContext, "login", null);
-            return js;
+            return new JsonResult(new { isLoggedOut = true });
         }
 
         //Metoda wysyłająca użytkownikowi ID konwersacji z drugą osobą. Konwersacja zostanie utworzona w przypadku jej braku. Wymaga zalogowania
@@ -147,6 +142,47 @@ namespace ChatServer.Controllers
                     }
 
                     return new JsonResult(new {id = conv.Id});
+                }
+            }
+            return new JsonResult("");
+        }
+
+        //Metoda dodająca użytkownika jako przyjaciel. Wymaga zalogowania
+        [HttpPost]
+        public JsonResult AddUserAsFriend(int id)
+        {
+            if (HttpContext.LoginId() > 0)
+            {
+                using (var c = new WebChat())
+                {
+                    var u1 = c.Users.FirstOrDefault(u => u.Id == HttpContext.LoginId());
+                    var u2 = c.Users.FirstOrDefault(u => u.Id == id);
+                    if (u1 != null && u2 != null)
+                    {
+                        int count = 0;
+                        foreach (Friends f in c.Friends)
+                        {
+                            var friendOne = f.Friend1 == u1.Id &&
+                                            f.Friend2 == u2.Id;
+                            var friendTwo = f.Friend1 == u2.Id &&
+                                            f.Friend2 == u1.Id;
+                            if (friendOne || friendTwo) count++;
+                        }
+
+                        if (count == 0)
+                        {
+                            var friendLink = new Friends
+                            {
+                                Friend1Navigation = u1,
+                                Friend2Navigation = u2
+                            };
+                            c.Add(friendLink);
+                            c.SaveChanges();
+                            return new JsonResult(new {added = true});
+                        }
+                    }
+
+                    return new JsonResult(new {added = false});
                 }
             }
             return new JsonResult("");

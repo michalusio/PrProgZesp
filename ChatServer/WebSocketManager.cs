@@ -59,17 +59,24 @@ namespace ChatServer
             using (var c = new WebChat())
             {
                 var user = c.Users.Single(u => u.Id == id);
-                var msg = JsonConvert.SerializeObject(
-                    new
-                    {
-                        id = user.Id,
-                        type = "login",
-                        user = user.Nickname,
-                        avatar = Convert.ToBase64String(user.Avatar ?? Startup.DefaultAvatar)
-                    });
+                
                 foreach (var ws in LoginMiddleware.WebSockets.Where(a =>
                     a.Value.State == WebSocketState.Open))
                 {
+                    var isFriend = c.Users
+                        .Include(u=>u.FriendsFriend1Navigation)
+                        .Include(u=>u.FriendsFriend2Navigation)
+                        .First(u => u.Id == ws.Key)
+                        .IsFriendWith(user);
+                    var msg = JsonConvert.SerializeObject(
+                        new
+                        {
+                            id = user.Id,
+                            type = "login",
+                            user = user.Nickname,
+                            avatar = Convert.ToBase64String(user.Avatar ?? Startup.DefaultAvatar),
+                            friend = isFriend
+                        });
                     await ws.Value.SendAsync(Encoding.UTF8.GetBytes(msg), WebSocketMessageType.Text,
                         true, CancellationToken.None);
                 }

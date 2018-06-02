@@ -12,7 +12,7 @@
                     {
                         var msg = item.Messages.OrderByDescending(m => m.Timestamp).FirstOrDefault();
                         <tr id="conv@(item.Id)" @{
-                            if (item.ConversationParticipants.First(c=>c.UserId==user.Id).SeenMessage<msg.Id)
+                            if (item.ConversationParticipants.First(c=>c.UserId==user.Id).SeenMessage<(msg?.Id??-1))
                             {
                                 @:class="bolder"
                             }
@@ -22,7 +22,7 @@
                                     @item.ConversationParticipants.Select(c => c.User.Nickname).Aggregate((c, n) => c + ", " + n)
                                 </div>
                                 <div>
-                                    @Html.Raw(msg.Text)
+                                    @Html.Raw(msg?.Text??"")
                                 </div>
                                 <span class="badge">@(item.Messages.Count)</span>
                             </td>

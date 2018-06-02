@@ -1,7 +1,7 @@
 ﻿@using ChatServer.Model
 @{
     var user = Context.Items["User"] as Users;
-    var status = (int)LoginMiddleware.Statuses[Context.LoginId()];
+    var status = (int)LoginMiddleware.Statuses.GetValueOrDefault(Context.LoginId(), Status.Unavailable);
     <div id="Settings" class="col-md-10 tab-pane fade">
         <table class="table">
             <thead>
