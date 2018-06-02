@@ -12,6 +12,7 @@ namespace ChatServer.Model
         public virtual DbSet<Messages> Messages { get; set; }
         public virtual DbSet<Users> Users { get; set; }
         public virtual DbSet<Friends> Friends { get; set; }
+        public virtual DbSet<Blocks> Blocks { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -74,6 +75,26 @@ namespace ChatServer.Model
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__Friends__Friend2__49C3F6B7");
             });
+
+            modelBuilder.Entity<Blocks>(entity =>
+            {
+                entity.ToTable("Blocks");
+                entity.HasKey(e => e.Id).ForSqlServerIsClustered();
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.HasOne(d => d.Block1Navigation)
+                    .WithMany(p => p.BlocksBlock1Navigation)
+                    .HasForeignKey(d => d.Block1)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Blocks__Block1__73BA3083");
+
+                entity.HasOne(d => d.Block2Navigation)
+                    .WithMany(p => p.BlocksBlock2Navigation)
+                    .HasForeignKey(d => d.Block2)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Blocks__Block2__74AE54BC");
+            });
+
 
             modelBuilder.Entity<Messages>(entity =>
             {

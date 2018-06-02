@@ -35,13 +35,21 @@
         $.post(
             "@Url.Action("AddUserAsFriend", "Home")",
         { id: id },
-        function(data) {
-            if (data.added) {
-                $(".user" + id).each(function(u) {
-                    if (u.children().count === 3) {
-                        u.children().eq(1).remove();
-                    }
-                })
+            function (data) {
+                if (data.added) {
+                    location.reload();
+            }
+        }
+        );
+    }
+
+    function blockUser(id) {
+        $.post(
+            "@Url.Action("BlockUser", "Home")",
+        { id: id },
+            function (data) {
+                if (data.added) {
+                    location.reload();
             }
         }
         );

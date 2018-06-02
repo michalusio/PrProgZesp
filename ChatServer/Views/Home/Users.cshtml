@@ -7,39 +7,52 @@
         <table class="table table-striped userTable">
             <tbody>
                 @foreach (var item in db
-                            .Users
-                            .Include(u=>u.FriendsFriend1Navigation)
-                            .Include(u=>u.FriendsFriend2Navigation)
-                            .Where(u =>
-                            LoginMiddleware.LoggedUsers.ContainsValue(u.Id) &&
-                            (int)LoginMiddleware.Statuses.GetValueOrDefault(u.Id, Status.Unavailable) < 3 &&
-                            u.Id != user.Id)
-                            )
-                {
-                <tr class="user@(item.Id)">
-                    <td onclick="talkUser(@(item.Id))">
-                        <image src="data:image/png;base64,@Convert.ToBase64String(item.Avatar ?? Startup.DefaultAvatar)" />
-                        @item.Nickname
-                    </td>
-                    @{
-                        if (item.IsFriendWith(user))
-                        {
-                            <td>
-                            </td>
-                        }
-                        else
-                        {
-                            <td onclick="friendUser(@(item.Id))">
-                                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                            </td>
-                        }
-                    }
-                    <td onclick="blockUser(@(item.Id))">
-                        <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
-                    </td>
+.Users
+.Include(u => u.FriendsFriend1Navigation)
+.Include(u => u.FriendsFriend2Navigation)
+.Include(u => u.BlocksBlock1Navigation)
+.Include(u => u.BlocksBlock2Navigation)
+.Where(u =>
+LoginMiddleware.LoggedUsers.ContainsValue(u.Id) &&
+(int)LoginMiddleware.Statuses.GetValueOrDefault(u.Id, Status.Unavailable) < 3 &&
+u.Id != user.Id)
+)
+    {
+            if (item.IsBlockedWith(user)) { continue; }
 
-                </tr>
+            <tr class="user@(item.Id)">
+                <td onclick="talkUser(@(item.Id))">
+                    <image src="data:image/png;base64,@Convert.ToBase64String(item.Avatar ?? Startup.DefaultAvatar)" />
+                    @item.Nickname
+                </td>
+                @{
+        if (item.IsFriendWith(user))
+        {
+            <td></td>
+}
+else
+{
+            <td onclick="friendUser(@(item.Id))">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            </td>
+}
                 }
+                @{
+        if (item.IsBlockedWith(user))
+        {
+            <td></td>
+}
+else
+{
+            <td onclick="blockUser(@(item.Id))">
+                <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
+            </td>
+}
+                }
+
+
+            </tr>
+}
             </tbody>
         </table>
 

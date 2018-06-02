@@ -188,6 +188,46 @@ namespace ChatServer.Controllers
             return new JsonResult("");
         }
 
+        [HttpPost]
+        public JsonResult BlockUser(int id)
+        {
+            if (HttpContext.LoginId() > 0)
+            {
+                using (var c = new WebChat())
+                {
+                    var u1 = c.Users.FirstOrDefault(u => u.Id == HttpContext.LoginId());
+                    var u2 = c.Users.FirstOrDefault(u => u.Id == id);
+                    if (u1 != null && u2 != null)
+                    {
+                        int count = 0;
+                        foreach (Blocks f in c.Blocks)
+                        {
+                            var blockOne = f.Block1 == u1.Id &&
+                                            f.Block2 == u2.Id;
+                            var blockTwo = f.Block1 == u2.Id &&
+                                            f.Block2 == u1.Id;
+                            if (blockOne || blockTwo) count++;
+                        }
+
+                        if (count == 0)
+                        {
+                            var blockLink = new Blocks
+                            {
+                                Block1Navigation = u1,
+                                Block2Navigation = u2
+                            };
+                            c.Add(blockLink);
+                            c.SaveChanges();
+                            return new JsonResult(new { added = true });
+                        }
+                    }
+
+                    return new JsonResult(new { added = false });
+                }
+            }
+            return new JsonResult("");
+        }
+
         //Metoda pobierająca nicki użytkowników konwersacji. Wymaga zalogowania
         [HttpPost]
         public JsonResult GetConversationUsers(int id)

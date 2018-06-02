@@ -21,11 +21,11 @@ function LoginMessage(obj) {
                 <image src="data:image/png;base64,${obj.avatar}"/>
                 ${obj.user}
             </td>
-`+(obj.friend?`
+`+ (obj.friend ? `<td></td>`:`
             <td onclick="friendUser(${obj.id})">
                 <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-            </td>`:
-        `<td></td>`)+`
+            </td>`
+        )+`
             <td onclick="blockUser(${obj.id})">
                 <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
             </td>
