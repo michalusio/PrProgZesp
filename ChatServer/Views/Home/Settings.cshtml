@@ -23,57 +23,160 @@
                             <li><a onclick="changeStatus(this, 5)" id="aStatus5"><img src="images/status5.png" class="statusImage" />&nbsp;Niedostępny</a></li>
                         </ul>
                     </div>
-                    <script>
-                        $(document).ready(function() {
-                            $("#statusLabel").html($("#aStatus@(status)").html());
-                        });
-                        function changeStatus(link, status) {
-                            $.post(
-                                "@Url.Action("SetStatus","Home")",
-                                {
-                                    status: status
-                                },
-                                function(data) {
-                                    if (data.newStatus > 0) {
-                                        $("#statusLabel").html(link.innerHTML);
-                                    }
-                                }
-                            );
-                        }
-                    </script>
                 </td>
             </tr>
             <tr>
-                <th class="col-md-4">Nazwa Użytkownika:</th>
-                <td class="col-md-4" id="nickname">@user.Nickname</td>
-                <td class="col-md-4"><button class="btn btn-default">Zmień</button></td>
-            </tr>
-            <tr>
-                <th class="col-md-4">Login:</th>
-                <td class="col-md-4">@user.Login</td>
-                <td class="col-md-4"><button class="btn btn-default">Zmień</button></td>
+                <th class = "col-md-4">Nazwa Użytkownika:</th>
+                <td class = "col-md-4" id="nickname">@user.Nickname</td>
+                <td class = "col-md-4"><button class="btn btn-default" onclick="changeProperty('nickname', this)">Zmień</button></td>
+            </tr>           
+            <tr>            
+                <th class = "col-md-4">Login:</th>
+                <td class = "col-md-4">@user.Login</td>
+                <td></td>   
             </tr>
             <tr>
                 <th class="col-md-4">Hasło:</th>
-                <td class="col-md-4">*****</td>
-                <td class="col-md-4"><button class="btn btn-default">Zmień</button></td>
+                <td class="col-md-4" id="password">******</td>
+                <td class="col-md-4"><button class="btn btn-default" onclick="changeProperty('password', this)">Zmień</button></td>
             </tr>
             <tr>
                 <th class="col-md-4">Avatar:</th>
-                <td class="col-md-4"><img src="data:image/png;base64,@Convert.ToBase64String(user.Avatar??Startup.DefaultAvatar)" style="border-radius:50%" /></td>
-                <td class="col-md-4"><button class="btn btn-default">Zmień</button></td>
+                <td class="col-md-4" id="avatar"><img alt="avatar" src="data:image/png;base64,@Convert.ToBase64String(user.Avatar ?? Startup.DefaultAvatar)" style="border-radius: 50%" width="200px" height = "200px"/></td>
+                <td class="col-md-4">
+                    <button class="btn btn-default" onclick="changeProperty('avatar', this)">Zmień</button>
+                    <input type="file"
+                           accept="image/png, image/jpeg"
+                           name="s_file"
+                           id="s_file"
+                           style="display: none;">
+                </td>
             </tr>
             <tr>
                 <th class="col-md-4">E-mail:</th>
-                <td class="col-md-4">@(user.Email??"-")</td>
-                <td class="col-md-4"><button class="btn btn-default">Zmień</button></td>
+                <td class="col-md-4" id="email">@(user.Email ?? "-")</td>
+                <td class="col-md-4"><button class="btn btn-default" onclick="changeProperty('email', this)">Zmień</button></td>
             </tr>
             <tr>
-                <th class="col-md-4">Telefon:</th>
-                <td class="col-md-4">@(user.Phone??"-")</td>
-                <td class="col-md-4"><button class="btn btn-default">Zmień</button></td>
+                <th class = "col-md-4">Telefon:</th>
+                <td class = "col-md-4" id="phone">@(user.Phone??"-")</td>
+                <td class = "col-md-4"><button class="btn btn-default" onclick="changeProperty('phone', this)">Zmień</button></td>
             </tr>
         </table>
+        <script>
+            $(document).ready(function() {
+                $("#statusLabel").html($("#aStatus@(status)").html());
+                var input = $("#s_file")[0];
+                input.addEventListener('change', function() {
+                    var curFiles = input.files;
+                    if (curFiles.length === 1 && validFileType(curFiles[0])) {
+                        var src = window.URL.createObjectURL(curFiles[0]);
+                        $("#avatar").children("img").prop("src", src);
 
+
+
+                        var formData = new FormData();
+                        formData.append('file', curFiles[0]);
+
+                        $.ajax({
+                            url : "@Url.Action("SetAvatar","Home")",
+                            type : 'POST',
+                            data : formData,
+                            processData: false,
+                            contentType: false
+                        });
+                    }
+                });
+            });
+
+            function validFileType(file) {
+                return (file.type === "image/png" || file.type === "image/jpeg");
+            }
+
+            function changeStatus(link, status) {
+                $.post(
+                    "@Url.Action("SetStatus","Home")",
+                    {
+                        status: status
+                    },
+                    function(data) {
+                        if (data.newStatus > 0) {
+                            $("#statusLabel").html(link.innerHTML);
+                        }
+                    }
+                );
+            }
+
+            function changeProperty(fieldId, btn) {
+                var button = $(btn);
+                if (fieldId !== 'avatar') {
+                    var field;
+                    var textField;
+                    if (button.html() === 'Zmień') {
+                        button.html('Zatwierdź');
+                        field = $(`#${fieldId}`);
+                        textField = $(`<input/>`);
+                        textField.addClass("form-control");
+                        switch (fieldId) {
+                            case "nickname":
+                                textField.prop("type", "text");
+                                textField.val(field.html());
+                                textField.prop("placeholder", "Pseudonim");
+                                textField.prop("pattern", "\\S{4,}");
+                                textField.prop("required", "true");
+                                textField.prop("title", "Pseudonim musi mieć co najmniej 4 znaki");
+                                textField.prop("oninvalid", "this.setCustomValidity('Pseudonim musi mieć co najmniej 4 znaki')");
+                                textField.prop("oninput", "setCustomValidity('')");
+                                break;
+                            case "password":
+                                textField.prop("type", "password");
+                                textField.prop("placeholder", "Hasło");
+                                textField.prop("pattern", "\\S{8,}");
+                                textField.prop("required", "true");
+                                textField.prop("title", "Hasło musi mieć co najmniej 8 znaków");
+                                textField.prop("oninvalid", "this.setCustomValidity('Hasło musi mieć co najmniej 8 znaków')");
+                                textField.prop("oninput", "setCustomValidity('')");
+                                break;
+                            case "email":
+                                textField.prop("type", "email");
+                                textField.val(field.html());
+                                textField.prop("placeholder", "E-mail");
+                                textField.prop("required", "true");
+                                textField.prop("title", "Podaj poprawną składnię adresu E-mail");
+                                textField.prop("oninvalid", "this.setCustomValidity('Podaj poprawną składnię adresu E-mail')");
+                                textField.prop("oninput", "setCustomValidity('')");
+                                break;
+                            case "phone":
+                                textField.prop("type", "tel");
+                                textField.val(field.html());
+                                textField.prop("placeholder", "Numer telefonu");
+                                textField.prop("required", "true");
+                                textField.prop("title", "Podaj poprawny numer telefonu");
+                                textField.prop("oninvalid", "this.setCustomValidity('Podaj poprawny numer telefonu')");
+                                textField.prop("oninput", "setCustomValidity('')");
+                                break;
+                        }
+                        field.html(textField);
+                    } else {
+                        field = $(`#${fieldId}`);
+                        textField = field.children("input");
+                        if (textField[0].reportValidity()) {
+                            var value = textField.val();
+                            field.html(fieldId === "password" ? "******" : value);
+                            button.html('Zmień');
+                            $.post(
+                                "@Url.Action("SetProperty","Home")",
+                                {
+                                    type: fieldId,
+                                    value: value
+                                }
+                            );
+                        }
+                    }
+                } else {
+                    $("#s_file").trigger("click");
+                }
+            }
+        </script>
     </div>
 }

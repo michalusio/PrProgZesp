@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using ChatServer.Model;
 using ChatServer.Models;
 using ChatServer.Utilities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChatServer.Controllers
@@ -281,6 +283,79 @@ namespace ChatServer.Controllers
                 }
             }
             return new JsonResult("");
+        }
+
+        //Metoda zmieniająca avatar użytkownika. Wymaga zalogowania
+        [HttpPost]
+        public async void SetAvatar(IFormFile file)
+        {
+            if (HttpContext.LoginId() > 0)
+            {
+                if (file == null)
+                {
+                    return;
+                }
+
+                if (file.Length > 2097152)
+                {
+                    return;
+                }
+
+                byte[] avatar;
+                using (var stream = new MemoryStream())
+                {
+                    await file.CopyToAsync(stream);
+                    avatar = stream.ToArray();
+                }
+
+                using (var c = new WebChat())
+                {
+                    var user = c.Users.First(u => u.Id == HttpContext.LoginId());
+                    user.Avatar = avatar;
+                    c.SaveChanges();
+                    Console.WriteLine("AVATAR SET");
+                }
+            }
+        }
+
+        //Metoda zmieniająca ustawienia użytkownika. Wymaga zalogowania
+        [HttpPost]
+        public void SetProperty(string type, string value)
+        {
+            if (HttpContext.LoginId() > 0)
+            {
+                if (type == null)
+                {
+                    return;
+                }
+
+                if (value == null)
+                {
+                    return;
+                }
+
+                using (var c = new WebChat())
+                {
+                    var user = c.Users.First(u => u.Id == HttpContext.LoginId());
+                    switch (type)
+                    {
+                        case "password":
+                            user.Password = BCrypt.Net.BCrypt.HashPassword(value);
+                            break;
+                        case "email":
+                            user.Email = value;
+                            break;
+                        case "nickname":
+                            user.Nickname = value;
+                            break;
+                        case "phone":
+                            user.Phone = value;
+                            break;
+                    }
+                    c.SaveChanges();
+                    Console.WriteLine($"PROPERTY {type} SET");
+                }
+            }
         }
 
         public IActionResult Error()
